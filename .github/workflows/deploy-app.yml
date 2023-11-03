@@ -19,11 +19,11 @@ jobs:
         run: docker build -t apl-back:v3 .  --platform linux/amd64
       
       - name: Push Docker Image to Docker Hub
-        run: docker push apl-back:v3
+        run: docker push plobon/apl-back:v3
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    # needs: build
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
