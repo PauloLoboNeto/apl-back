@@ -18,7 +18,7 @@ spec:
       containers:
         - name: apl
           image: plobon/apl-back:v3
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: "Always"
           env:
             - name: spring.jpa.properties.hibernate.dialect
               valueFrom: 
