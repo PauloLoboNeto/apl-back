@@ -1,0 +1,56 @@
+# Create a deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apl
+spec:
+  selector:
+    matchLabels:
+      app: apl
+  replicas: 1
+  template:
+    metadata:
+#      annotations:
+#        eks.amazonaws.com/role-arn: arn:aws:iam::231670762225:role/my-app-service-account
+      labels:
+        app: apl
+    spec:
+      containers:
+        - name: apl
+          image: plobon/apl-back:v3
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: spring.jpa.properties.hibernate.dialect
+              valueFrom: 
+                configMapKeyRef:
+                  name: apl-config
+                  key: HIBERNATE_DIALECT
+            - name: spring.jpa.hibernate.show-sql
+              valueFrom: 
+                configMapKeyRef:
+                  name: apl-config
+                  key: HIBERNATE_SHOW_SQL
+            - name: spring.datasource.initialization-mode
+              valueFrom: 
+                configMapKeyRef:
+                  name: apl-config
+                  key: DATASOURCE_INITIALIZATION_MODE
+            - name: spring.datasource.initialize
+              valueFrom: 
+                configMapKeyRef:
+                  name: apl-config
+                  key: DATASOURCE_INITIALIZE
+            - name: spring.datasource.continue-on-error
+              valueFrom: 
+                configMapKeyRef:
+                  name: apl-config
+                  key: DATASOURCE_CONTINUE_ON_ERROR
+            - name: spring.jpa.hibernate.ddl-auto
+              valueFrom: 
+                configMapKeyRef:
+                  name: apl-config
+                  key: HIBERNATE_DDL_AUTO
+            - name: server.port
+              value: '9090'
+          ports:
+            - containerPort: 9090

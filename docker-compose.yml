@@ -1,0 +1,56 @@
+version: '3.3'
+
+services:
+  postgres:
+    image: postgres
+    container_name: db
+    env_file: ./.env
+    environment:
+      - POSTGRES_PASSWORD=$POSTGRES_ROOT_PASSWORD
+    ports:
+      - $POSTGRES_LOCAL_PORT:$POSTGRES_DOCKER_PORT
+    networks:
+      - apl-back-fase1_default
+
+  app:
+    depends_on:
+      - postgres
+    build: ./
+    env_file: ./.env
+    ports:
+      - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url"  : "jdbc:postgresql://postgres:$POSTGRES_DOCKER_PORT/$POSTGRES_DATABASE",
+        "spring.datasource.username" : "$POSTGRES_ROOT_USER",
+        "spring.datasource.password" : "$POSTGRES_ROOT_PASSWORD",
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.PostgreSQLDialect",
+        "spring.jpa.hibernate.show-sql" : true,
+        "spring.datasource.initialization-mode" : "always",
+        "spring.datasource.initialize" : true,
+        "spring.datasource.continue-on-error": true,
+        "spring.jpa.hibernate.ddl-auto":"update",
+        "server.port" : "$SPRING_LOCAL_PORT"
+      }'
+    volumes:
+      - .m2:/root/.m2
+    stdin_open: true
+    tty: true
+    networks:
+      - apl-back-fase1_default
+
+  phppgadmin:
+    image: dpage/pgadmin4
+    container_name: phppgadmin
+    env_file: ./.env
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=$PGADMIN_ROOT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD=$PGADMIN_ROOT_PASSWORD
+    ports:
+      - "8080:80"
+    networks:
+      - apl-back-fase1_default
+
+networks:
+  apl-back-fase1_default:
+    driver: bridge
