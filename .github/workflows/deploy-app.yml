@@ -47,6 +47,7 @@ jobs:
 
       - name: Configurar kubectl
         run: |
+          aws sts get-caller-identity
           aws eks update-kubeconfig --name eks --region us-east-1
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
